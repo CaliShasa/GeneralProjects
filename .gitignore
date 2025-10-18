@@ -3,3 +3,10 @@ c2g-venv/
 *.pyc
 __pycache__/
 .ipynb_checkpoints/
+.vscode/
+cache
+SMDP/mappa1.ipynb
+SMDP/mappa2.ipynb
+SMDP/mappa_verde_smdp.png
+SMDP/publicprivate.ipynb
+
