@@ -128,15 +128,13 @@ st.markdown(f"**Struttura finanziaria:** {perc_equity}% Equity / {100 - perc_equ
 # ---------------------------------------------------------------------
 # SEZIONE 2: CALCOLI
 # ---------------------------------------------------------------------
-st.header("Calcoli economico-finanziari")
+st.subheader("Indicatori principali")
 
 df, van, tir_proj, tir_eq, wacc, dscr_medio, dscr_min = calcola_pef(
     capex, opex, ricavi, inflazione,
     durata_costruzione, durata_gestione,
     tasso_interesse, aliquota_fiscale, perc_equity, costo_equity
 )
-
-st.header("2️⃣ Calcoli economico-finanziari")
 
 # Mostra indicatori chiave in una griglia
 col1, col2, col3 = st.columns(3)
@@ -165,23 +163,21 @@ st.header("Risultati")
 
 st.dataframe(df.style.format("{:,.0f}").highlight_max(color='lightgreen'))
 
-st.subheader("Indicatori principali")
+# st.subheader("Indicatori principali")
 
-col1, col2, col3 = st.columns(3)
-col1.metric("VAN progetto (€)", f"{van:,.0f}")
-col2.metric("TIR progetto (%)", f"{tir_proj*100:,.1f}")
-col3.metric("WACC (%)", f"{wacc*100:,.1f}")
+# col1, col2, col3 = st.columns(3)
+# col1.metric("VAN progetto (€)", f"{van:,.0f}")
+# col2.metric("TIR progetto (%)", f"{tir_proj*100:,.1f}")
+# col3.metric("WACC (%)", f"{wacc*100:,.1f}")
 
-col1, col2, col3 = st.columns(3)
-col1.metric("TIR Equity (%)", f"{tir_eq*100:,.1f}")
-col2.metric("DSCR medio", f"{dscr_medio:.2f}")
-col3.metric("DSCR minimo", f"{dscr_min:.2f}")
+# col1, col2, col3 = st.columns(3)
+# col1.metric("TIR Equity (%)", f"{tir_eq*100:,.1f}")
+# col2.metric("DSCR medio", f"{dscr_medio:.2f}")
+# col3.metric("DSCR minimo", f"{dscr_min:.2f}")
 
 # ---------------------------------------------------------------------
 # SEZIONE 4: VALUTAZIONE DI BANCABILITÀ
 # ---------------------------------------------------------------------
-st.header("Valutazione di bancabilità")
-
 st.header("Valutazione di bancabilità")
 
 if tir_proj > wacc and dscr_min > 1.2:
