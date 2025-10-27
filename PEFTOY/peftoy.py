@@ -18,16 +18,17 @@ with st.expander("Linea temporale e CapEx"):
     st.markdown("""
 - **Linea temporale:** anni di costruzione + anni di gestione.  
 - **CapEx:** distribuite uniformemente sugli anni di costruzione  
-  (ipotesi semplificata – nella realtà possono aumentare ogni anno con l’inflazione).  
+  (ipotesi semplificata – le spese in conto capitale possono dipendere da variabili macroeconomiche come l'inflazione).  
 - Durante la **costruzione** non si generano ricavi, solo investimenti.  
 - Durante la **gestione** iniziano i ricavi e i costi operativi (OPEX).  
 """)
 
 with st.expander("Ricavi e Opex"):
     st.markdown("""
-- **Ricavi:** nulli durante la costruzione, poi crescono con l’inflazione.  
-  In uno scenario realistico dovremmo stimare anche l’andamento della **domanda** (in crescita o in decrescita).  
-- **Opex:** costi operativi annui (manutenzione, utenze, personale, ecc.) anch’essi soggetti a inflazione.  
+- **Ricavi:** nulli durante la costruzione. Crescono annualmente in base all’inflazione. 
+  In uno scenario realistico dovremmo stimare anche l’andamento della domanda (in crescita o in decrescita) ed eventualmente stimare l'esistenza ad eventuali shock di domanda,
+                nonché considerare tutti i rischi connessi alla domanda.  
+- **Opex:** costi operativi annui (manutenzione, utenze, personale, ecc.) anch’essi soggetti ad inflazione.  
 """)
 
 with st.expander(" Conto economico operativo"):
@@ -38,39 +39,84 @@ with st.expander(" Conto economico operativo"):
 **Imposte** = max(EBIT, 0) × aliquota fiscale  *(non si pagano imposte se l’EBIT è negativo)*  
 **Utile netto** = EBIT − Imposte  
 **Flusso operativo (unlevered)** = Utile netto + Ammortamenti  
-→ flusso di cassa disponibile per remunerare debito ed equity  
 """)
 
 with st.expander(" Struttura finanziaria"):
-    st.markdown(r"""
+    st.markdown("""
 - **Debito (D):** CAPEX × (1 − %Equity)  
 - **Equity (E):** CAPEX × %Equity  
 - **Servizio del debito:** rata costante (formula francese)  
-
-**Costo medio ponderato del capitale (WACC):**
-
-\[
-\text{WACC} = \left(\frac{E}{V}\right)\cdot K_e \;+\; \left(\frac{D}{V}\right)\cdot K_d \cdot (1 - t)
-\]
-
+""")
+    st.markdown("**Costo medio ponderato del capitale (WACC):**")
+    st.latex(r"""
+    \text{WACC} = \left(\frac{E}{V}\right)\cdot K_e + \left(\frac{D}{V}\right)\cdot K_d\cdot(1 - t)
+    """)
+    st.markdown("""
 dove:  
-- \(Ke\): costo dell’equity  
-- \(Kd\): costo del debito  
+- \(K_e\): costo dell’equity  
+- \(K_d\): costo del debito  
 - \(t\): aliquota fiscale  
 - \(V = D + E\): valore complessivo del capitale investito  
 """)
 
+
 with st.expander(" Indicatori principali"):
     st.markdown("""
-- **VAN progetto:** valore attuale netto dei flussi *unlevered* al **WACC**  
-  → misura la creazione di valore del progetto per tutti i finanziatori (debito + equity).  
-- **TIR progetto:** IRR dei flussi *unlevered*  
-  → rendimento complessivo prima della leva finanziaria.  
-- **TIR Equity:** IRR dei flussi *levered* (dopo il servizio del debito)  
-  → redditività per l’azionista.  
-- **DSCR (Debt Service Coverage Ratio):** CF operativo / Servizio del debito  
-  → capacità di rimborsare il debito anno per anno.  
-""")
+- **TIR progetto:**  
+  Rendimento complessivo del progetto, prima della leva finanziaria.
+  E' ricavato dalla formula del VAN, trovando il WACC che fa sì che il VAN sia zero.
+  Se il TIR è maggiore del WACC "di equilibrio" il progetto crea valore per tutti gli investitori.
+  """)
+    st.latex(r"""
+    0 = -CAPEX + \sum_{t=1}^{T} \frac{FCF_t}{(1 + TIR_{proj})^t}
+    """)
+
+    st.markdown("""
+- **TIR Equity**  
+  Rendimento per l’azionista, dopo il servizio del debito.  
+  """)
+    st.latex(r"""
+    0 = -E + \sum_{t=1}^{T} \frac{(FCF_t - DS_t)}{(1 + TIR_{eq})^t}
+    """)
+    st.markdown("""
+  dove:  
+  - \(E\): equity investito  
+  - \(DS_t\): servizio del debito nel periodo \(t\)  
+  - \(FCF_t\): flusso operativo (unlevered)
+  """)
+
+    st.markdown("""
+- **DSCR (Debt Service Coverage Ratio):**  
+  Misura la capacità di rimborso del debito anno per anno.  
+  """)
+    st.latex(r"""
+    DSCR_t = \frac{FCF_t}{Servizio\_del\_debito_t}
+    """)
+
+    st.markdown("""
+- **VAN progetto (Valore Attuale Netto):**  
+  Misura la creazione di valore del progetto per tutti i finanziatori.  
+  Tiene conto del **WACC** (costo medio ponderato del capitale), e quindi del costo del finanziamento tramite equity e debito, considerando
+  i flussi di cassa operativi e gli investimenti iniziali.  
+  Se inseriamo il TIR di equilibrio il VAN è 0. Quindi per TIR maggiori a quelli di equilibrio il VAN è positivo ed il progetto genera rendimento.
+                
+  Ricapitoliamo le condizioni economiche di fattibilità: 
+                Se TIR > WACC ⇒  VAN > 0  : il progetto crea valore economico.
+                Se TIR < WACC ⇒  VAN < 0  : il progetto distrugge valore economico.
+  Ricordiamo la prospettiva delle banche (fattibilità finanziaria): 
+                Un progetto può avere un VAN positivo ma non essere bancabile se i flussi non sono distribuiti bene nel tempo.
+                Se DSCR > 1.2 il progetto ha una buona capacità di rimborso del debito.
+                Se DSCR < 1.0 il progetto non riesce a coprire le rate del debito.
+                Per valori compresi tra 1.2 e 1 la bancabilità del progetto non è al riparto da eventuali spese impreviste.
+  Ricordiamo la prospettiva per l'azionista:
+                Se Tir equity è maggiore di Ke atteso, l'investimento in equity è conveniente per l'azionista.
+
+  """)
+    st.latex(r"""
+    VAN = -CAPEX + \sum_{t=1}^{T} \frac{FCF_t}{(1 + WACC)^t}
+    """)
+
+
 
 with st.expander(" Ipotesi esemplificative"):
     st.markdown("""
