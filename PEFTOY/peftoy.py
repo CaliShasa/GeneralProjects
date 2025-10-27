@@ -151,23 +151,18 @@ con elementi aggiuntivi di complessità finanziaria.
 
 with st.expander(" Logica di bancabilità (criterio semaforo)"):
     st.markdown("""
-La valutazione di bancabilità serve a verificare **se il progetto è sostenibile dal punto di vista economico e finanziario**.
+**Criterio semplice:**
 
-**🟢 Progetto bancabile:**  
-- **VAN > 0** → crea valore economico complessivo.  
-- **TIR_progetto > WACC** → rendimento del progetto superiore al costo del capitale.  
-- **DSCR_min ≥ 1.20** → capacità di rimborso solida e flussi stabili.  
+- 🟢 **Bancabile** se: **TIR_progetto > WACC** **e** **VAN > 0** **e** **DSCR_min > 1.2**  
+- 🟡 **Borderline** se: **TIR_progetto > WACC** **e** **VAN > 0** **e** **1.0 ≤ DSCR_min ≤ 1.2**  
+- 🔴 **Non bancabile**: **tutti gli altri casi** (almeno una condizione non rispettata)
 
-**🟡 Progetto borderline:**  
-- **VAN > 0** ma **DSCR_min tra 1.00 e 1.20** → valore economico positivo ma rischio di tensione di cassa.  
-- Potrebbe essere bancabile con garanzie integrative o revisione della struttura finanziaria.  
+L’app mostra anche la **variabile problematica** (o le variabili) che impediscono la bancabilità:
+- **TIR_progetto ≤ WACC**
+- **VAN ≤ 0**
+- **DSCR_min ≤ 1.2** (oppure **DSCR_min < 1.0**)
+""")
 
-**🔴 Progetto non bancabile:**  
-- **VAN < 0** → distruzione di valore economico (il progetto non remunera il capitale).  
-- **DSCR_min < 1.00** → flussi di cassa insufficienti per coprire il servizio del debito.  
-- Anche un progetto economicamente buono (VAN > 0) può risultare non bancabile
-  se i flussi non sono ben distribuiti nel tempo.
-  """)
 
 
 with st.expander(" Note didattiche"):
@@ -266,42 +261,60 @@ st.dataframe(df.style.format("{:,.0f}").highlight_max(color='lightgreen'))
 # ---------------------------------------------------------------------
 # SEZIONE 4: VALUTAZIONE DI BANCABILITÀ (aggiornata)
 # ---------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# SEZIONE 4: VALUTAZIONE DI BANCABILITÀ (logica semplice + variabile problematica)
+# ---------------------------------------------------------------------
 st.header("Valutazione di bancabilità")
 
-if van > 0 and tir_proj > wacc and dscr_min >= 1.2:
+def valuta_bancabilita(van, tir_proj, wacc, dscr_min):
+    # stato
+    if (tir_proj > wacc) and (van > 0) and (dscr_min > 1.2):
+        stato = "green"
+    elif (tir_proj > wacc) and (van > 0) and (1.0 <= dscr_min <= 1.2):
+        stato = "yellow"
+    else:
+        stato = "red"
+
+    # variabili problematiche (tutte quelle che non rispettano la soglia)
+    issues = []
+    if not (tir_proj > wacc):
+        issues.append("TIR_progetto ≤ WACC")
+    if not (van > 0):
+        issues.append("VAN ≤ 0")
+    # per chiarezza distinguiamo i due casi DSCR
+    if not (dscr_min > 1.2):
+        if dscr_min < 1.0:
+            issues.append("DSCR_min < 1.0")
+        elif dscr_min <= 1.2:
+            issues.append("DSCR_min ≤ 1.2")
+
+    return stato, issues
+
+stato, issues = valuta_bancabilita(van, tir_proj, wacc, dscr_min)
+
+if stato == "green":
     st.success("🟢 Progetto **bancabile**")
     st.markdown("""
-    - **VAN > 0** → il progetto crea valore economico.  
-    - **TIR_progetto > WACC** → rendimento complessivo superiore al costo del capitale.  
-    - **DSCR_min ≥ 1.20** → buona capacità di rimborso del debito.
+- **TIR_progetto > WACC**
+- **VAN > 0**
+- **DSCR_min > 1.2**
     """)
-
-elif (van > 0 and (0.95 * wacc) <= tir_proj <= (1.05 * wacc)) or (1.0 <= dscr_min < 1.2):
+elif stato == "yellow":
     st.warning("🟡 Progetto **borderline**")
     st.markdown("""
-    - **DSCR_min tra 1.0 e 1.2** → margine di sicurezza ridotto.  
-    - **Oppure TIR_progetto ≈ WACC** → rendimento vicino al costo del capitale.  
-    - **VAN > 0** → il progetto può creare valore, ma con equilibrio delicato.  
-
-    **Azioni possibili:**  
-    - Aumentare la quota **Equity** o la durata della concessione.  
-    - Ridurre **CAPEX/OPEX** o negoziare un tasso più basso (Kd).
+- **TIR_progetto > WACC**
+- **VAN > 0**
+- **DSCR_min** compreso tra **1.0** e **1.2**
     """)
-
-elif van < 0 or dscr_min < 1.0 or tir_proj < 0.95 * wacc:
-    st.error("🔴 Progetto **non bancabile**")
-    st.markdown("""
-    - **VAN < 0** → distruzione di valore economico.  
-    - **DSCR_min < 1.0** → flussi insufficienti per il servizio del debito.  
-    - **TIR_progetto < WACC** → rendimento inferiore al costo del capitale.  
-    """)
-
 else:
-    st.info("ℹ️ Progetto in equilibrio limite")
-    st.markdown("""
-    Il progetto presenta indicatori misti o in equilibrio incerto.  
-    Si consiglia un’analisi di sensibilità sui principali parametri.
-    """)
+    st.error("🔴 Progetto **non bancabile**")
+
+# Variabile/i problematica/e
+if issues:
+    st.markdown("**Variabile problematica:**")
+    for it in issues:
+        st.markdown(f"- ❗ {it}")
+
 st.caption("""
 Legenda:
 - **WACC** = costo medio del capitale (mix debito + equity)  
