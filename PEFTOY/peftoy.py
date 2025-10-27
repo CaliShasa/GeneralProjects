@@ -4,7 +4,7 @@ from pef_logica_economica import calcola_pef  # logica separata
 
 st.set_page_config(page_title="Mini PEF Tool", page_icon="💰", layout="centered")
 
-st.title("💰 Mini PEF – Simulatore didattico di Project Financing")
+st.title("Mini PEF – Simulatore didattico di Project Financing")
 st.markdown("Simulatore didattico semplificato per la costruzione di un Piano Economico Finanziario (PEF).")
 
 # ---------------------------------------------------------------------
