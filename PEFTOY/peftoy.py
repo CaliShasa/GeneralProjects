@@ -120,32 +120,74 @@ with st.expander(" Indicatori principali"):
 
 with st.expander(" Ipotesi esemplificative"):
     st.markdown("""
-- Nessun capitale circolante operativo  
-- Nessun scudo fiscale sugli interessi passivi  
-- Nessun CAPEX di manutenzione o valore residuo  
-- Nessun interesse capitalizzato durante la costruzione  
-- Nessun costo di transazione o commissione bancaria  
-""")
+Le seguenti ipotesi semplificano la costruzione del modello per scopi didattici,
+ma nella realtà di un Project Financing professionale dovrebbero essere affinate o integrate
+con elementi aggiuntivi di complessità finanziaria.
+
+- **Nessun capitale circolante operativo:**  
+  Si assume che i crediti, debiti e scorte non assorbano né generino liquidità.  
+  Nella realtà, la gestione del capitale circolante (ritardi nei pagamenti, tempi di incasso, ecc.)
+  influenza significativamente i flussi di cassa.
+
+- **Nessuno scudo fiscale sugli interessi passivi:**  
+  Non si considera la deducibilità fiscale degli interessi passivi sul debito.  
+  Questa ipotesi è conservativa: nella realtà, lo "scudo fiscale" riduce l’imposizione complessiva e migliora la redditività del progetto.
+
+- **Nessun CAPEX di manutenzione o valore residuo:**  
+  L’infrastruttura si considera integralmente ammortizzata alla fine della gestione e non si prevede
+  un valore di rivendita o di subentro.  
+  In un PEF reale, sarebbe importante considerare gli investimenti ricorrenti e il valore residuo dell’opera.
+
+- **Nessun interesse capitalizzato durante la costruzione:**  
+  Si ipotizza che gli oneri finanziari non vengano sommati al costo di costruzione.  
+  In un caso reale, i costi del debito durante la costruzione possono essere “capitalizzati”
+  e aggiunti al valore dell’investimento iniziale.
+
+- **Nessun costo di transazione o commissione bancaria:**  
+  Non si considerano costi accessori come commissioni di strutturazione, advisory, garanzie o notarili.  
+  Questi costi riducono il rendimento effettivo e devono essere inclusi in un’analisi completa.
+  """)
+
 
 with st.expander(" Logica di bancabilità (criterio semaforo)"):
     st.markdown("""
-**✅ Progetto potenzialmente bancabile:**  
-- **TIR_progetto > WACC**  **e**  **DSCR_min > 1.20**  
+La valutazione di bancabilità serve a verificare **se il progetto è sostenibile dal punto di vista economico e finanziario**.
 
-**⚠️ Progetto borderline:**  
-- **DSCR_min tra 1.00 e 1.20**  
+**🟢 Progetto bancabile:**  
+- **VAN > 0** → crea valore economico complessivo.  
+- **TIR_progetto > WACC** → rendimento del progetto superiore al costo del capitale.  
+- **DSCR_min ≥ 1.20** → capacità di rimborso solida e flussi stabili.  
 
-**❌ Progetto non bancabile:**  
-- **DSCR_min ≤ 1.00**  
-""")
+**🟡 Progetto borderline:**  
+- **VAN > 0** ma **DSCR_min tra 1.00 e 1.20** → valore economico positivo ma rischio di tensione di cassa.  
+- Potrebbe essere bancabile con garanzie integrative o revisione della struttura finanziaria.  
+
+**🔴 Progetto non bancabile:**  
+- **VAN < 0** → distruzione di valore economico (il progetto non remunera il capitale).  
+- **DSCR_min < 1.00** → flussi di cassa insufficienti per coprire il servizio del debito.  
+- Anche un progetto economicamente buono (VAN > 0) può risultare non bancabile
+  se i flussi non sono ben distribuiti nel tempo.
+  """)
+
 
 with st.expander(" Note didattiche"):
     st.markdown("""
-- Il confronto **TIR_progetto vs WACC** è una semplificazione didattica.  
-- La soglia **DSCR_min = 1.20** è prassi bancaria diffusa.  
-- Il modello non calcola **LLCR, PLCR** o un **TIR Equity** basato su dividendi.  
-- Obiettivo: capire la relazione tra **struttura finanziaria**, **leva** e **sostenibilità del debito**.  
-""")
+- Il confronto **TIR_progetto vs WACC** fornisce un criterio sintetico di convenienza economica:  
+  se il TIR è superiore al WACC, il progetto **crea valore**; se è inferiore, **lo distrugge**.
+
+- Il parametro **DSCR_min = 1.20** è uno standard di riferimento comunemente usato
+  dagli istituti di credito: rappresenta il margine minimo accettabile per considerare un progetto sostenibile.
+
+- Il modello non calcola indicatori più avanzati come:
+  - **LLCR (Loan Life Coverage Ratio):** misura la copertura del debito residuo nel tempo;  
+  - **PLCR (Project Life Coverage Ratio):** analizza la copertura del debito sull’intera vita del progetto;  
+  - **TIR Equity su dividendi effettivi**, utile per valutare progetti con politiche di distribuzione complesse.
+
+- L’obiettivo del modello è **didattico**: mostrare come la struttura finanziaria
+  (rapporto debito/equity, costo del capitale, inflazione, ecc.)
+  influenzi la **redditività complessiva e la sostenibilità finanziaria** del progetto.
+  """)
+
 
 
     
@@ -192,7 +234,7 @@ col4, col5 = st.columns(2)
 col4.metric("TIR Equity (%)", f"{tir_eq*100:.1f}")
 col5.metric("DSCR medio / min", f"{dscr_medio:.2f} / {dscr_min:.2f}")
 
-with st.expander("ℹ️ Spiegazione degli indicatori"):
+with st.expander("ℹSpiegazione degli indicatori"):
     st.markdown("""
 **WACC (Weighted Average Cost of Capital):** costo medio del capitale impiegato.  
 **VAN:** valore economico generato dal progetto (VAN > 0 = crea valore).  
@@ -222,42 +264,48 @@ st.dataframe(df.style.format("{:,.0f}").highlight_max(color='lightgreen'))
 # col3.metric("DSCR minimo", f"{dscr_min:.2f}")
 
 # ---------------------------------------------------------------------
-# SEZIONE 4: VALUTAZIONE DI BANCABILITÀ
+# SEZIONE 4: VALUTAZIONE DI BANCABILITÀ (aggiornata)
 # ---------------------------------------------------------------------
 st.header("Valutazione di bancabilità")
 
-if tir_proj > wacc and dscr_min > 1.2:
-    st.success("✅ Progetto potenzialmente **bancabile**")
+if van > 0 and tir_proj > wacc and dscr_min >= 1.2:
+    st.success("🟢 Progetto **bancabile**")
     st.markdown("""
-    - **TIR_progetto > WACC** → il progetto crea valore economico.  
-    - **DSCR_min > 1.2** → buona capacità di rimborso del debito.  
-    💡 *Condizione tipica per un project finance “bancabile”.*
+    - **VAN > 0** → il progetto crea valore economico.  
+    - **TIR_progetto > WACC** → rendimento complessivo superiore al costo del capitale.  
+    - **DSCR_min ≥ 1.20** → solida capacità di rimborso del debito.  
+    💡 *Condizione tipica per un project finance bancabile e sostenibile.*
     """)
 
-elif dscr_min > 1.0:
-    st.warning("⚠️ Progetto **borderline**")
+elif (van > 0 and tir_proj >= wacc and 1.0 <= dscr_min < 1.2):
+    st.warning("🟡 Progetto **borderline**")
     st.markdown("""
-    - **DSCR_min tra 1.0 e 1.2:** margine di sicurezza ridotto.  
-    - **TIR_progetto ≈ WACC:** redditività complessiva limitata.  
+    - **VAN > 0** ma **DSCR_min tra 1.0 e 1.2** → rischio di liquidità o margine di sicurezza ridotto.  
+    - **TIR_progetto ≈ WACC** → rendimento limitato.  
 
-    **Aree di miglioramento:**
-    - Aumentare la quota **Equity** per ridurre l’onere del debito  
-    - Negoziare un **tasso di interesse più basso (Kd)**  
-    - Ottimizzare i **costi operativi (OPEX)**  
-    - Allungare la **durata del finanziamento o della concessione**
+    **Azioni migliorative possibili:**  
+    - Aumentare la quota **Equity** per ridurre il debito.  
+    - Ridurre **OPEX** o negoziare un **tasso più basso (Kd)**.  
+    - Allungare la durata del finanziamento.
+    """)
+
+elif van < 0 or dscr_min < 1.0:
+    st.error("🔴 Progetto **non bancabile**")
+    st.markdown("""
+    - **VAN < 0** → distruzione di valore economico.  
+    - **DSCR_min < 1.0** → i flussi non coprono il servizio del debito.  
+
+    **Aree di intervento:**  
+    - Ridurre **CAPEX** o aumentare i **ricavi attesi**.  
+    - Allungare la **durata di gestione** per ammortizzare meglio gli investimenti.  
+    - Ricercare **garanzie pubbliche** o revisione della struttura finanziaria.
     """)
 
 else:
-    st.error("❌ Progetto **non bancabile**")
+    st.info("ℹ️ Progetto in equilibrio limite")
     st.markdown("""
-    - **DSCR_min ≤ 1.0:** i flussi non coprono le rate del debito.  
-    - **TIR_progetto < WACC:** il progetto distrugge valore economico.  
-
-    **Aree di miglioramento:**
-    - Ridurre i **costi di investimento (CAPEX)**  
-    - Aumentare i **ricavi** o introdurre **canoni garantiti**  
-    - Aumentare la **durata della gestione** per ammortizzare i costi  
-    - Incrementare la **quota di equity** o cercare **garanzie pubbliche**
+    Il progetto si trova in una situazione di **equilibrio economico-finanziario incerto**.  
+    Si consiglia di effettuare una **sensibilità sui principali parametri** (tassi, costi, inflazione, durata).
     """)
 
 st.caption("""
