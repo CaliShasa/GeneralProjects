@@ -12,19 +12,21 @@ import pandas as pd
 ### 1 - EBITDA: Ricavi - Opex
 ### 2 - Ammortamenti: CAPEX / durata gestione (ammortamento lineare, ipotesi esemplificativa)
 ### 3 - EBIT: EBITDA - Ammortamenti
-### 4 - Imposte: max(EBIT, 0) * aliquota fiscale Non si pagano tasse sulla perdita, per cui se ebit è maggiore di zero si applica l'aliquota fiscale, altrimenti no. Una condizione if è equivalente.
+### 4 - Imposte: max(EBIT, 0) * aliquota fiscale
 ### 5 - Utile netto: EBIT - Imposte
 ### 6 - Flusso operativo: Utile netto + Ammortamenti (post-imposte, pre-debito)
 
-
 ###### STRUTTURA FINANZIARIA ######
-### - Debito: CAPEX * (1 - %equity) In questo modo si calcola quanto debito è finanziato con il debito, escludendo l'equity.
+### - Debito: CAPEX * (1 - %equity)
 ### - Equity: CAPEX * %equity
 ### - Servizio del debito: rata costante (formula francese)
+### - Costo medio ponderato del capitale (WACC): 
+###   WACC = (%Equity * Ke) + (%Debito * Kd * (1 - Aliquota fiscale))
 
 ###### INDICATORI PRINCIPALI ######
-### - VAN progetto: NPV dei flussi unlevered al tasso del debito (semplificazione)
+### - VAN progetto: NPV dei flussi unlevered al WACC
 ### - TIR progetto: IRR dei flussi unlevered
+### - TIR equity: IRR dei flussi levered (solo per la quota equity)
 ### - DSCR: CF operativo / Servizio del debito
 
 ###### IPOTESI ESEMPLIFICATIVE ######
@@ -35,12 +37,11 @@ import pandas as pd
 ########################################################
 
 
-
 def calcola_pef(capex, opex, ricavi, inflazione, durata_costruzione, durata_gestione,
-                tasso_interesse, aliquota_fiscale, perc_equity):
+                tasso_interesse, aliquota_fiscale, perc_equity, costo_equity=8.0):
     """
     Calcola i flussi di cassa e gli indicatori principali del PEF.
-    Restituisce (df, van_progetto, tir_progetto, dscr_medio, dscr_min)
+    Restituisce (df, van_progetto, tir_progetto, tir_equity, wacc, dscr_medio, dscr_min)
     """
 
     perc_debito = 100 - perc_equity
@@ -70,7 +71,7 @@ def calcola_pef(capex, opex, ricavi, inflazione, durata_costruzione, durata_gest
     imposte = np.maximum(ebit, 0) * (aliquota_fiscale / 100)
     utile_netto = ebit - imposte
 
-    # Flusso di cassa operativo (post imposte, pre debito)
+    # Flusso operativo (unlevered)
     flusso_cassa_operativo = utile_netto + ammortamenti
 
     # Servizio del debito
@@ -78,12 +79,27 @@ def calcola_pef(capex, opex, ricavi, inflazione, durata_costruzione, durata_gest
     rata_annua = npf.pmt(tasso_interesse/100, durata_gestione, -debito_iniziale)
     rata_annua = np.array([0]*durata_costruzione + [rata_annua]*durata_gestione)
 
-    # Equity iniziale
+    # Flusso di cassa per l’equity (levered)
     equity_iniziale = capex * (perc_equity / 100)
+    flussi_equity = np.array(
+        [-equity_iniziale] + [f - r for f, r in zip(flusso_cassa_operativo[1:], rata_annua[1:])]
+    )
 
-    # Calcoli principali
-    van_progetto = npf.npv(tasso_interesse/100, np.concatenate(([-capex], flusso_cassa_operativo[durata_costruzione:])))
+    # Calcolo del WACC
+    ke = costo_equity / 100
+    kd = tasso_interesse / 100
+    we = perc_equity / 100
+    wd = perc_debito / 100
+    wacc = we * ke + wd * kd * (1 - aliquota_fiscale / 100)
+
+    # Calcolo VAN e TIR progetto (unlevered)
+    van_progetto = npf.npv(wacc, np.concatenate(([-capex], flusso_cassa_operativo[durata_costruzione:])))
     tir_progetto = npf.irr(np.concatenate(([-capex], flusso_cassa_operativo[durata_costruzione:])))
+
+    # Calcolo TIR equity (levered)
+    tir_equity = npf.irr(flussi_equity)
+
+    # DSCR
     dscr = (flusso_cassa_operativo[durata_costruzione:] / rata_annua[durata_costruzione:])
     dscr_medio = np.nanmean(dscr)
     dscr_min = np.nanmin(dscr)
@@ -100,4 +116,4 @@ def calcola_pef(capex, opex, ricavi, inflazione, durata_costruzione, durata_gest
         "Servizio debito": rata_annua,
     })
 
-    return df, van_progetto, tir_progetto, dscr_medio, dscr_min
+    return df, van_progetto, tir_progetto, tir_equity, wacc, dscr_medio, dscr_min
