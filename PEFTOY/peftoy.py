@@ -266,53 +266,46 @@ st.dataframe(df.style.format("{:,.0f}").highlight_max(color='lightgreen'))
 # ---------------------------------------------------------------------
 # SEZIONE 4: VALUTAZIONE DI BANCABILITÀ (aggiornata)
 # ---------------------------------------------------------------------
-st.header("Valutazione di bancabilità")
-
-if van > 0 and tir_proj > wacc and dscr_min >= 1.2:
-    st.success("🟢 Progetto **bancabile**")
+with st.expander(" Logica di bancabilità (criterio semaforo)"):
     st.markdown("""
-    - **VAN > 0** → il progetto crea valore economico.  
-    - **TIR_progetto > WACC** → rendimento complessivo superiore al costo del capitale.  
-    - **DSCR_min ≥ 1.20** → solida capacità di rimborso del debito.  
-    💡 *Condizione tipica per un project finance bancabile e sostenibile.*
-    """)
+La **valutazione di bancabilità** serve a verificare se un progetto è sostenibile
+dal punto di vista **economico** (creazione di valore) e **finanziario** (capacità di rimborso del debito).
 
-elif (van > 0 and tir_proj >= wacc and 1.0 <= dscr_min < 1.2):
-    st.warning("🟡 Progetto **borderline**")
-    st.markdown("""
-    - **VAN > 0** ma **DSCR_min tra 1.0 e 1.2** → rischio di liquidità o margine di sicurezza ridotto.  
-    - **TIR_progetto ≈ WACC** → rendimento limitato.  
+---
 
-    **Azioni migliorative possibili:**  
-    - Aumentare la quota **Equity** per ridurre il debito.  
-    - Ridurre **OPEX** o negoziare un **tasso più basso (Kd)**.  
-    - Allungare la durata del finanziamento.
-    """)
+**🟢 Progetto bancabile:**  
+- **VAN > 0** → il progetto crea valore economico netto.  
+- **TIR_progetto > WACC** → rendimento complessivo superiore al costo del capitale.  
+- **DSCR_min ≥ 1.20** → flussi di cassa stabili e adeguata copertura del servizio del debito.  
+💡 *Condizione tipica per un project financing solido e sostenibile.*  
 
-elif van < 0 or dscr_min < 1.0:
-    st.error("🔴 Progetto **non bancabile**")
-    st.markdown("""
-    - **VAN < 0** → distruzione di valore economico.  
-    - **DSCR_min < 1.0** → i flussi non coprono il servizio del debito.  
+---
 
-    **Aree di intervento:**  
-    - Ridurre **CAPEX** o aumentare i **ricavi attesi**.  
-    - Allungare la **durata di gestione** per ammortizzare meglio gli investimenti.  
-    - Ricercare **garanzie pubbliche** o revisione della struttura finanziaria.
-    """)
+**🟡 Progetto borderline:**  
+- **DSCR_min tra 1.00 e 1.20** → margine di sicurezza finanziaria ridotto.  
+- **Oppure TIR_progetto ≈ WACC (±5%)** → rendimento vicino al costo del capitale.  
+- **VAN > 0** → il progetto crea valore, ma con equilibrio delicato.  
+📊 *Potrebbe essere bancabile solo con garanzie integrative o revisione della struttura finanziaria.*  
 
-else:
-    st.info("ℹ️ Progetto in equilibrio limite")
-    st.markdown("""
-    Il progetto si trova in una situazione di **equilibrio economico-finanziario incerto**.  
-    Si consiglia di effettuare una **sensibilità sui principali parametri** (tassi, costi, inflazione, durata).
-    """)
+---
 
-st.caption("""
-Legenda:
-- **WACC** = costo medio del capitale (mix debito + equity)  
-- **TIR_progetto** = rendimento complessivo del progetto  
-- **DSCR_min** = sostenibilità finanziaria minima nel tempo  
+**🔴 Progetto non bancabile:**  
+- **VAN < 0** → distruzione di valore economico (non remunera il capitale investito).  
+- **DSCR_min < 1.00** → flussi di cassa insufficienti a coprire il debito.  
+- **TIR_progetto < WACC (–5%)** → rendimento inferiore al costo medio del capitale.  
+⚠️ *Anche un progetto economicamente valido può risultare non bancabile se i flussi sono mal distribuiti nel tempo.*  
+
+---
+
+**ℹ️ In equilibrio limite:**  
+- Indicatori misti o in equilibrio instabile (TIR≈WACC, VAN≈0, DSCR≈1).  
+- Richiede un’analisi di **sensibilità** sui principali parametri (tassi, costi, inflazione, durata).  
+
+---
+
+**Legenda:**  
+- **VAN** → valore attuale netto dei flussi di cassa (creazione di valore)  
+- **TIR_progetto** → rendimento complessivo del progetto (*unlevered*)  
+- **WACC** → costo medio ponderato del capitale (debito + equity)  
+- **DSCR** → capacità di copertura del servizio del debito (cash flow / rata)  
 """)
-
-st.caption("Simulazione didattica semplificata – non sostituisce un'analisi professionale.")
