@@ -113,7 +113,7 @@ def calcola_pef(capex, opex, ricavi, inflazione, durata_costruzione, durata_gest
         "Ammortamenti": ammortamenti,
         "Utile netto": utile_netto,
         "Flusso operativo": flusso_cassa_operativo,
-        "Servizio debito": rata_annua,
+        "Costo debito": rata_annua,
     })
 
     return df, van_progetto, tir_progetto, tir_equity, wacc, dscr_medio, dscr_min

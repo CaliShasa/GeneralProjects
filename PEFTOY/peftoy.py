@@ -45,7 +45,7 @@ with st.expander(" Struttura finanziaria"):
     st.markdown("""
 - **Debito (D):** CAPEX × (1 − %Equity)  
 - **Equity (E):** CAPEX × %Equity  
-- **Servizio del debito:** rata costante (formula francese)  
+- **Costo del debito:** rata costante (formula francese)  
 """)
     st.markdown("**Costo medio ponderato del capitale (WACC):**")
     st.latex(r"""
@@ -73,7 +73,7 @@ with st.expander(" Indicatori principali"):
 
     st.markdown("""
 - **TIR Equity**  
-  Rendimento per l’azionista, dopo il servizio del debito.  
+  Rendimento per l’azionista, dopo il costo del debito.  
   """)
     st.latex(r"""
     0 = -E + \sum_{t=1}^{T} \frac{(FCF_t - DS_t)}{(1 + TIR_{eq})^t}
@@ -81,7 +81,7 @@ with st.expander(" Indicatori principali"):
     st.markdown("""
   dove:  
   - \(E\): equity investito  
-  - \(DS_t\): servizio del debito nel periodo \(t\)  
+  - \(DS_t\): costo del debito nel periodo \(t\)  
   - \(FCF_t\): flusso operativo (unlevered)
   """)
 
@@ -90,7 +90,7 @@ with st.expander(" Indicatori principali"):
   Misura la capacità di rimborso del debito anno per anno.  
   """)
     st.latex(r"""
-    DSCR_t = \frac{FCF_t}{Servizio\_del\_debito_t}
+    DSCR_t = \frac{FCF_t}{Costo\_del\_debito_t}
     """)
 
     st.markdown("""
@@ -234,7 +234,7 @@ with st.expander("ℹSpiegazione degli indicatori"):
 **WACC (Weighted Average Cost of Capital):** costo medio del capitale impiegato.  
 **VAN:** valore economico generato dal progetto (VAN > 0 = crea valore).  
 **TIR progetto:** rendimento complessivo del progetto, prima del debito.  
-**TIR Equity:** rendimento per l’azionista, dopo il servizio del debito.  
+**TIR Equity:** rendimento per l’azionista, dopo il costo del debito.  
 **DSCR:** misura la capacità di rimborso del debito (DSCR > 1 = flusso sufficiente).  
 """)
 
