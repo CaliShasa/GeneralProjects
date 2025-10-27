@@ -264,14 +264,14 @@ st.dataframe(df.style.format("{:,.0f}").highlight_max(color='lightgreen'))
 # ---------------------------------------------------------------------
 # SEZIONE 4: VALUTAZIONE DI BANCABILITÀ (logica semplice + variabile problematica)
 # ---------------------------------------------------------------------
-st.header("Valutazione di bancabilità")
+st.header("Valutazione di bancabilità") 
 
 def valuta_bancabilita(van, tir_proj, wacc, dscr_min):
     # stato
     if (tir_proj > wacc) and (van > 0) and (dscr_min > 1.2):
         stato = "green"
     elif (tir_proj > wacc) and (van > 0) and (1.0 <= dscr_min <= 1.2):
-        stato = "yellow"
+        stato = "yellow" #
     else:
         stato = "red"
 
