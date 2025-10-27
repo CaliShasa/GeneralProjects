@@ -4,7 +4,7 @@ from pef_logica_economica import calcola_pef  # 👈 import logica separata
 
 st.set_page_config(page_title="Mini PEF Tool", page_icon="💰", layout="centered")
 
-st.title("📘 Logica economica del PEF")
+st.title("Logica economica del PEF")
 
 # --- SEZIONE 1: Linea temporale e CapEx ---
 with st.expander("1. Linea temporale e CapEx"):
