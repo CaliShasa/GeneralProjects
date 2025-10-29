@@ -157,10 +157,6 @@ with st.expander(" Logica di bancabilità (criterio semaforo)"):
 - 🟡 **Borderline** se: **TIR_progetto > WACC** **e** **VAN > 0** **e** **1.0 ≤ DSCR_min ≤ 1.2**  
 - 🔴 **Non bancabile**: **tutti gli altri casi** (almeno una condizione non rispettata)
 
-L’app mostra anche la **variabile problematica** (o le variabili) che impediscono la bancabilità:
-- **TIR_progetto ≤ WACC**
-- **VAN ≤ 0**
-- **DSCR_min ≤ 1.2** (oppure **DSCR_min < 1.0**)
 """)
 
 
