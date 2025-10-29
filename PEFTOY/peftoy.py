@@ -225,7 +225,7 @@ col4, col5 = st.columns(2)
 col4.metric("TIR Equity (%)", f"{tir_eq*100:.1f}")
 col5.metric("DSCR medio / min", f"{dscr_medio:.2f} / {dscr_min:.2f}")
 
-with st.expander("ℹSpiegazione degli indicatori"):
+with st.expander("Spiegazione degli indicatori"):
     st.markdown("""
 **WACC (Weighted Average Cost of Capital):** costo medio del capitale impiegato.  
 **VAN:** valore economico generato dal progetto (VAN > 0 = crea valore).  
